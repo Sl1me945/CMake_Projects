@@ -6,7 +6,7 @@ int main()
 	TaskTracker taskTracker;
 	do {
 		std::string command;
-		std::cout << "Enter command (add, update, delete, list, exit): ";
+		std::cout << "Enter command (add, update, delete, list, exit, save, load): ";
 		std::cin >> command;
 		if (command == "add") {
 			std::string description;
@@ -42,6 +42,18 @@ int main()
 			}
 			status = stringToStatus(statusStr);
 			taskTracker.listTasksByStatus(status);
+		}
+		else if (command == "save") {
+			std::string filename;
+			std::cout << "Enter filename to save tasks: ";
+			std::cin >> filename;
+			taskTracker.saveTasksToJson(filename);
+		}
+		else if (command == "load") {
+			std::string filename;
+			std::cout << "Enter filename to load tasks: ";
+			std::cin >> filename;
+			taskTracker.loadTasksFromJson(filename);
 		}
 		else if (command == "exit") {
 			break;

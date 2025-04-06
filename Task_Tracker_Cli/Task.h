@@ -17,6 +17,12 @@ public:
 		: id(nextId++), description(description), status(TaskStatus::ToDo),
 		createdAt(std::chrono::system_clock::now()), updatedAt(std::chrono::system_clock::now()) {
 	}
+	Task(int id, const std::string& description, TaskStatus status,
+		const std::chrono::system_clock::time_point& createdAt,
+		const std::chrono::system_clock::time_point& updatedAt)
+		: id(id), description(description), status(status),
+		createdAt(createdAt), updatedAt(updatedAt) {
+	}
 
 	// Getters for task properties
 	int getId() const { return id; }

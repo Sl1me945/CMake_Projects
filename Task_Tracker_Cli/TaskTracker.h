@@ -1,9 +1,6 @@
 #pragma once
-#include <string>
 #include <vector>
-#include <chrono>
-#include <iostream>
-#include "Task.h"
+#include <fstream>
 #include "task_utils.h"
 
 
@@ -16,6 +13,8 @@ public:
 	void updateTaskStatus(int id, TaskStatus status);
 	void listAllTasks() const;
 	void listTasksByStatus(const TaskStatus& status) const;
+	void saveTasksToJson(const std::string& filename) const;
+	void loadTasksFromJson(const std::string& filename);
 private:
 	std::vector<Task> tasks;
 };
