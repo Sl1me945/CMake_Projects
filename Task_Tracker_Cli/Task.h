@@ -40,6 +40,7 @@ public:
 		status = newStatus;
 		updatedAt = std::chrono::system_clock::now();
 	}
+	static void setNextId(int nextId);
 
 private:
 	static int nextId; // Static member to keep track of the next ID
@@ -51,3 +52,6 @@ private:
 };
 
 inline int Task::nextId = 1; // Initialize static member variable
+inline void Task::setNextId(int nextId) {
+	Task::nextId = nextId;
+}

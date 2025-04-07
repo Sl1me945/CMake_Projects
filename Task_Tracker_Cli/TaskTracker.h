@@ -6,7 +6,6 @@
 
 class TaskTracker {
 public:
-	TaskTracker() = default;
 	void addTask(const std::string& description);
 	void updateTask(int id, const std::string& description);
 	void deleteTask(int id);

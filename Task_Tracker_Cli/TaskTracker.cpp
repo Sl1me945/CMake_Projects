@@ -14,7 +14,7 @@ void TaskTracker::updateTask(int id, const std::string& description)
 	for (auto& task : tasks) {
 		if (task.getId() == id) {
 			task.setDescription(description);
-			std::cout << "======Task added======" << std::endl 
+			std::cout << "======Updated======" << std::endl 
 				<< task << std::endl;
 			return;
 		}
@@ -81,8 +81,7 @@ void TaskTracker::saveTasksToJson(const std::string& filename) const
 {
 	std::ofstream file(filename + ".json");
 	if (!file.is_open()) {
-		std::cerr << "Failed to open file: " << filename << std::endl;
-		return;
+		throw std::runtime_error("Failed to open file: " + filename);
 	}
 	file << "[\n";
 	for (size_t i = 0; i < tasks.size(); ++i) {
@@ -100,8 +99,7 @@ void TaskTracker::loadTasksFromJson(const std::string& filename)
 {
 	std::ifstream file(filename + ".json");
 	if (!file.is_open()) {
-		std::cerr << "Failed to open file: " << filename << std::endl;
-		return;
+		throw std::runtime_error("Failed to open file: " + filename);
 	}
 
 	std::string line, buffer;
@@ -118,6 +116,8 @@ void TaskTracker::loadTasksFromJson(const std::string& filename)
 		tasks.push_back(jsonToTask(jsonEntry));
 		pos = end + 1;
 	}
+	Task::setNextId(tasks.back().getId() + 1);
+
 }
 
 

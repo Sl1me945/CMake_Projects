@@ -14,7 +14,7 @@ inline TaskStatus stringToStatus(const std::string& statusStr) {
 		return TaskStatus::Done;
 	}
 	else {
-		std::cerr << "Invalid task status string" << std::endl;
+		throw std::invalid_argument("Invalid task status");
 	}
 }
 inline std::string statusToString(const TaskStatus& status) {
@@ -26,7 +26,7 @@ inline std::string statusToString(const TaskStatus& status) {
 	case TaskStatus::Done:
 		return "Done";
 	default:
-		std::cerr << "Invalid task status" << std::endl;
+		throw std::invalid_argument("Invalid task status");
 	}
 }
 inline std::ostream& operator<<(std::ostream& os, const TaskStatus& status) {
@@ -67,7 +67,7 @@ inline std::ostream& operator<<(std::ostream& os, const Task& task) {
 	return os;
 }
 
-// Function to convert a task to JSON format
+// Function with json
 inline std::string taskToJson(const Task& task) {
 	return "{ \"id\": " + std::to_string(task.getId()) +
 		", \"description\": \"" + task.getDescription() +
@@ -75,7 +75,6 @@ inline std::string taskToJson(const Task& task) {
 		"\", \"createdAt\": \"" + timePointToString(task.getCreatedAt()) +
 		"\", \"updatedAt\": \"" + timePointToString(task.getUpdatedAt()) + "\" }";
 }
-// Function to convert a JSON string to a Task object
 inline Task jsonToTask(const std::string& json) {
 	int id = 0;
 	std::string description, statusStr, createdAtStr, updatedAtStr;

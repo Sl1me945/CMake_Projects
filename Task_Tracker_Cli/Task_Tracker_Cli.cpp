@@ -1,67 +1,105 @@
 ﻿#include "Task_Tracker_Cli.h"
 
+void printHelp();
 
-int main()
-{
-	TaskTracker taskTracker;
-	do {
-		std::string command;
-		std::cout << "Enter command (add, update, delete, list, exit, save, load): ";
-		std::cin >> command;
-		if (command == "add") {
-			std::string description;
-			std::cout << "Enter task description: ";
-			std::cin.ignore();
-			std::getline(std::cin, description);
-			taskTracker.addTask(description);
-		}
-		else if (command == "update") {
-			int id;
-			std::string description;
-			std::cout << "Enter task ID to update: ";
-			std::cin >> id;
-			std::cout << "Enter new task description: ";
-			std::cin.ignore();
-			std::getline(std::cin, description);
-			taskTracker.updateTask(id, description);
-		}
-		else if (command == "delete") {
-			int id;
-			std::cout << "Enter task ID to delete: ";
-			std::cin >> id;
-			taskTracker.deleteTask(id);
-		}
-		else if (command == "list") {
-			TaskStatus status;
-			std::string statusStr;
-			std::cout << "Enter task status to list (ToDo, InProgress, Done or All): ";
-			std::cin >> statusStr;
-			if (statusStr == "All") {
-				taskTracker.listAllTasks();
-				continue;
-			}
-			status = stringToStatus(statusStr);
-			taskTracker.listTasksByStatus(status);
-		}
-		else if (command == "save") {
-			std::string filename;
-			std::cout << "Enter filename to save tasks: ";
-			std::cin >> filename;
-			taskTracker.saveTasksToJson(filename);
-		}
-		else if (command == "load") {
-			std::string filename;
-			std::cout << "Enter filename to load tasks: ";
-			std::cin >> filename;
-			taskTracker.loadTasksFromJson(filename);
-		}
-		else if (command == "exit") {
-			break;
-		}
-		else {
-			std::cerr << "Unknown command." << std::endl;
-		}
-	} while (true);
+int main(int argc, char* argv[]) {
+    TaskTracker taskTracker;
+    std::string filename{ "tasks" };
 
-	return 0;
+    taskTracker.loadTasksFromJson(filename);
+
+    if (argc < 2) {
+        std::cerr << "No command provided. Use --help to see usage" << std::endl;
+        return 1;
+    }
+
+    std::string command = argv[1];
+
+	if (command == "--help") {
+		printHelp();
+		return 0;
+	}
+    else if (command == "add") {
+        if (argc < 3) {
+            std::cerr << "Usage: add <description>" << std::endl;
+            return 1;
+        }
+        std::string description = argv[2];
+        for (int i = 3; i < argc; ++i) {
+            description += " ";
+            description += argv[i];
+        }
+        taskTracker.addTask(description);
+    }
+    else if (command == "update") {
+        if (argc < 4) {
+            std::cerr << "Usage: update <id> <new_description>" << std::endl;
+            return 1;
+        }
+        int id = std::stoi(argv[2]);
+        std::string description = argv[3];
+        for (int i = 4; i < argc; ++i) {
+            description += " ";
+            description += argv[i];
+        }
+        taskTracker.updateTask(id, description);
+    }
+    else if (command == "delete") {
+        if (argc < 3) {
+            std::cerr << "Usage: delete <id>" << std::endl;
+            return 1;
+        }
+        int id = std::stoi(argv[2]);
+        taskTracker.deleteTask(id);
+    }
+    else if(command == "mark") {
+		if (argc < 4) {
+			std::cerr << "Usage: mark <id> <status>" << std::endl;
+			return 1;
+		}
+		int id = std::stoi(argv[2]);
+		std::string statusStr = argv[3];
+		try {
+			TaskStatus status = stringToStatus(statusStr);
+			taskTracker.updateTaskStatus(id, status);
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Invalid status: " << e.what() << std::endl;
+			return 1;
+		}
+    }
+    else if (command == "list") {
+        if (argc == 2) {
+            taskTracker.listAllTasks();
+        }
+        else {
+            std::string statusStr = argv[2];
+            try {
+                TaskStatus status = stringToStatus(statusStr);
+                taskTracker.listTasksByStatus(status);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Invalid status: " << e.what() << std::endl;
+                return 1;
+            }
+        }
+    }
+    else {
+        std::cerr << "Unknown command. Use --help to see available commands.\n";
+        return 1;
+    }
+
+    taskTracker.saveTasksToJson(filename);
+
+    return 0;
+}
+
+void printHelp() {
+    std::cout << "Available commands:\n"
+        << "  add <description>          Add a new task\n"
+        << "  update <id> <description>  Update a task\n"
+        << "  delete <id>                Delete a task\n"
+        << "  mark <id> <status>         Mark a task as ToDo, InProgress, or Done\n"
+        << "  list [status]              List all tasks or tasks by status\n"
+        << "  --help                     Show this help message\n";
 }
