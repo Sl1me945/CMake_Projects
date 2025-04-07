@@ -1,6 +1,6 @@
 # Task Tracker CLI
 
-A simple command-line task tracker written in C++. Tasks are stored in JSON format and persisted between sessions.
+A simple command-line task tracker written in C++ for roadmap.sh. Tasks are stored in JSON format and persisted between sessions.
 
 ## Features
 
