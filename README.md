@@ -1,8 +1,10 @@
 # Task Tracker CLI
 
-A simple command-line task tracker written in C++ for roadmap.sh. Tasks are stored in JSON format and persisted between sessions.
+A simple command-line task tracker built in modern C++ without third-party libraries. Tasks are saved to and loaded from a `.json` file across runs.
 
-## Features
+🔗 **This project was built as part of the challenge at [roadmap.sh/projects/task-tracker](https://roadmap.sh/projects/task-tracker)**
+
+## ⚙️ Features
 
 - Add new tasks with descriptions
 - Update task descriptions by ID
@@ -27,7 +29,7 @@ cmake ..
 cmake --build .
 ```
 
-## Usage
+## 📦 Usage
 
 Run the compiled executable with one of the following commands:
 
