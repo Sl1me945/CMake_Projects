@@ -79,6 +79,10 @@ void TaskTracker::listTasksByStatus(const TaskStatus& status) const
 
 void TaskTracker::saveTasksToJson(const std::string& filename) const
 {
+	if (tasks.empty()) {
+		return;
+	}
+
 	std::ofstream file(filename + ".json");
 	if (!file.is_open()) {
 		throw std::runtime_error("Failed to open file: " + filename);
@@ -92,7 +96,8 @@ void TaskTracker::saveTasksToJson(const std::string& filename) const
 	}
 	file << "\n]\n";
 	file.close();
-	std::cout << "Tasks saved to " << filename << std::endl;
+
+	std::cout << "Tasks saved to " << filename << ".json" << std::endl;
 }
 
 void TaskTracker::loadTasksFromJson(const std::string& filename)
@@ -116,7 +121,10 @@ void TaskTracker::loadTasksFromJson(const std::string& filename)
 		tasks.push_back(jsonToTask(jsonEntry));
 		pos = end + 1;
 	}
-	Task::setNextId(tasks.back().getId() + 1);
+	if (!tasks.empty()) {
+		Task::setNextId(tasks.back().getId() + 1);
+		std::cout << "Tasks loaded from " << filename << ".json" << std::endl;
+	}
 
 }
 

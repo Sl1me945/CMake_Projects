@@ -37,21 +37,31 @@ inline std::ostream& operator<<(std::ostream& os, const TaskStatus& status) {
 // Functions with time_point
 inline std::string timePointToString(const std::chrono::system_clock::time_point& timePoint) {
 	auto timeT = std::chrono::system_clock::to_time_t(timePoint);
-	auto tm = *std::localtime(&timeT);
-	char buffer[80];
-	std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
-	return std::string(buffer);
+	std::tm tm = *std::gmtime(&timeT);  // <-- зміна тут
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+	return oss.str();
 }
 inline std::chrono::system_clock::time_point stringToTimePoint(const std::string& timeStr) {
 	std::tm tm = {};
-	std::istringstream ss(timeStr);
-	ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-	if (ss.fail()) {
-		throw std::invalid_argument("Invalid time string format");
+	std::istringstream iss(timeStr);
+	iss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+	if (iss.fail()) {
+		throw std::invalid_argument("Invalid time format");
 	}
-	auto timeT = std::mktime(&tm);
+#if defined(_WIN32)
+	// Windows doesn't have timegm, so we simulate it
+	_putenv_s("TZ", "UTC");
+	_tzset();
+	time_t timeT = std::mktime(&tm);
+	_putenv_s("TZ", "");
+	_tzset();
+#else
+	time_t timeT = timegm(&tm); // Linux/Mac
+#endif
 	return std::chrono::system_clock::from_time_t(timeT);
 }
+
 inline std::ostream& operator<<(std::ostream& os, const std::chrono::system_clock::time_point& timePoint) {
 	os << timePointToString(timePoint);
 	return os;

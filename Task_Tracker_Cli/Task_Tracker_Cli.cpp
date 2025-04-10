@@ -6,7 +6,31 @@ int main(int argc, char* argv[]) {
     TaskTracker taskTracker;
     std::string filename{ "tasks" };
 
-    taskTracker.loadTasksFromJson(filename);
+    try {
+        taskTracker.loadTasksFromJson(filename);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to load tasks: " << e.what() << std::endl;
+
+        auto createNewTaskFile = [&]() -> bool {
+            std::cout << "Creating new task file." << std::endl;
+            try {
+                taskTracker.saveTasksToJson(filename);
+                return true;
+            }
+            catch (const std::exception& saveError) {
+                std::cerr << "Error saving tasks: " << saveError.what() << std::endl;
+                return false;
+            }
+            };
+
+        if (!createNewTaskFile()) {
+            return 1;
+        }
+        return 0; // або можеш return 0, якщо це не критична помилка
+    }
+
+
 
     if (argc < 2) {
         std::cerr << "No command provided. Use --help to see usage" << std::endl;
@@ -71,12 +95,14 @@ int main(int argc, char* argv[]) {
     else if (command == "list") {
         if (argc == 2) {
             taskTracker.listAllTasks();
+            return 0;
         }
         else {
             std::string statusStr = argv[2];
             try {
                 TaskStatus status = stringToStatus(statusStr);
                 taskTracker.listTasksByStatus(status);
+				return 0;
             }
             catch (const std::exception& e) {
                 std::cerr << "Invalid status: " << e.what() << std::endl;
